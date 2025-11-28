@@ -21,3 +21,14 @@ Utilizamos a wordlist padrão `rockyou.txt`, nativa do Kali Linux. Caso o arquiv
 ```bash
 # Localiza e descompacta a wordlist
 sudo gzip -d /usr/share/wordlists/rockyou.txt.gz
+```
+
+## 2. Reconhecimento e Coleta de Informações
+
+Antes de iniciar os ataques, foi necessário identificar o endereço IP do alvo na rede interna e verificar quais versões de serviços estavam rodando.
+
+### Identificação do Host (Host Discovery)
+Utilizamos o `netdiscover` para escanear a faixa de IP da rede interna e localizar a máquina alvo.
+
+```bash
+sudo netdiscover -r 192.168.56.0/24
