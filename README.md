@@ -79,11 +79,16 @@ Criamos um arquivo local chamado `users.txt` contendo possíveis usuários do si
 echo -e "admin\nroot\nmsfadmin\nuser\nguest" > users.txt
 ```
 
-Detalhamento da Sintaxe
-* -h 192.168.56.101: Define o IP do alvo.
+Comando Executado
+Nesta execução, alteramos a flag de usuário único (-u) para lista de usuários (-U) e selecionamos o módulo smbnt.
 
-* -u msfadmin: Define o usuário específico a ser testado.
+```bash
+medusa -h 192.168.56.101 -U users.txt -P /usr/share/wordlists/rockyou.txt -M smbnt
+```
 
-* -P .../rockyou.txt: Indica o caminho da wordlist de senhas.
+Resultados Obtidos
+A ferramenta testou as combinações e logrou êxito ao validar o acesso para o usuário msfadmin, demonstrando que a reutilização de senhas ou senhas fracas em serviços críticos (como compartilhamento de arquivos) compromete o sistema.
 
-* -M ftp: Seleciona o módulo específico para o protocolo FTP.
+Evidência do Ataque:
+
+Credencial Confirmada:
