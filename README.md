@@ -52,16 +52,16 @@ O objetivo desta etapa foi testar a robustez das credenciais de acesso ao servi�
 medusa -h 192.168.56.101 -u msfadmin -P /usr/share/wordlists/rockyou.txt -M ftp
 ```
 
-Detalhamento da Sintaxe
-* -h 192.168.56.101: Define o IP do alvo.
+### Detalhamento da Sintaxe
+* `-h 192.168.56.101`: Define o IP do alvo.
 
-* '-u msfadmin': Define o usuário específico a ser testado.
+* `-u msfadmin`: Define o usuário específico a ser testado.
 
-* '-P .../rockyou.txt': Indica o caminho da wordlist de senhas.
+* `-P .../rockyou.txt`: Indica o caminho da wordlist de senhas.
 
-* '-M ftp': Seleciona o módulo específico para o protocolo FTP.
+* `-M ftp`: Seleciona o módulo específico para o protocolo FTP.
 
-Resultados Obtidos
+### Resultados Obtidos
 A ferramenta processou a lista e obteve êxito ao encontrar a credencial correta.
 
 Evidência do Ataque:
@@ -80,16 +80,42 @@ Criamos um arquivo local chamado `users.txt` contendo possíveis usuários do si
 echo -e "admin\nroot\nmsfadmin\nuser\nguest" > users.txt
 ```
 
-Comando Executado
+### Comando Executado
 Nesta execução, alteramos a flag de usuário único (-u) para lista de usuários (-U) e selecionamos o módulo smbnt.
 
 ```bash
 medusa -h 192.168.56.101 -U users.txt -P /usr/share/wordlists/rockyou.txt -M smbnt
 ```
 
-Resultados Obtidos
+### Resultados Obtidos
 A ferramenta testou as combinações e logrou êxito ao validar o acesso para o usuário msfadmin, demonstrando que a reutilização de senhas ou senhas fracas em serviços críticos (como compartilhamento de arquivos) compromete o sistema.
 
 Evidência do Ataque:
 
 Credencial Confirmada:
+
+## 5. Relatório de Mitigação e Conclusão
+
+Com base nos testes realizados, foi possível comprometer com facilidade tanto o serviço de transferência de arquivos (FTP) quanto o compartilhamento de rede (SMB). A causa raiz da vulnerabilidade não foi uma falha no software em si, mas sim a configuração insegura de credenciais (Senhas Fracas).
+
+### Medidas de Mitigação Recomendadas
+
+Para prevenir ataques de força bruta como os demonstrados com o Medusa, recomendamos a implementação das seguintes defesas:
+
+1.  **Políticas de Senhas Robustas:**
+    * Impor um comprimento mínimo (ex: 12 caracteres).
+    * Exigir complexidade (mistura de maiúsculas, minúsculas, números e símbolos) para inviabilizar ataques baseados em dicionário (wordlists).
+
+2.  **Limitação de Tentativas (Account Lockout):**
+    * Configurar o sistema para bloquear temporariamente o IP de origem ou a conta de usuário após um número fixo de falhas consecutivas (ex: 3 a 5 tentativas).
+    * Ferramentas como **Fail2Ban** são eficazes para automatizar esse bloqueio em servidores Linux.
+
+3.  **Desativação de Serviços Desnecessários:**
+    * Se o protocolo FTP não é estritamente necessário, ele deve ser desativado e substituído por protocolos mais seguros e criptografados, como o SFTP (SSH).
+
+4.  **Monitoramento de Logs:**
+    * Ferramentas de força bruta geram um grande volume de logs de erro. Monitorar arquivos como `/var/log/auth.log` permite detectar e responder a esses ataques em tempo real.
+
+### Conclusão
+
+Este projeto demonstrou na prática como ferramentas automatizadas exploram configurações padrão e senhas fracas. O sucesso dos ataques contra o FTP e SMB reforça a necessidade de endurecimento (hardening) dos servidores e a importância de nunca utilizar credenciais padrão em ambientes de produção.
