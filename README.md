@@ -22,7 +22,7 @@ Utilizamos a wordlist padrão `rockyou.txt`, nativa do Kali Linux. Caso o arquiv
 # Localiza e descompacta a wordlist
 sudo gzip -d /usr/share/wordlists/rockyou.txt.gz
 ```
-
+---
 ## 2. Reconhecimento e Coleta de Informações
 
 Antes de iniciar os ataques, foi necessário identificar o endereço IP do alvo na rede interna e verificar quais versões de serviços estavam rodando.
@@ -32,3 +32,58 @@ Utilizamos o `netdiscover` para escanear a faixa de IP da rede interna e localiz
 
 ```bash
 sudo netdiscover -r 192.168.56.0/24
+```
+
+### Varredura de Portas e Serviços
+Com o IP identificado (192.168.56.101), executamos o Nmap para listar as portas abertas e identificar as versões dos serviços, focando nos protocolos FTP e SMB.
+
+```bash
+nmap -sV -p 21,139,445 192.168.56.101
+```
+Evidência do Escaneamento: 
+
+---
+## 3. Execução do Ataque: FTP (Porta 21)
+
+O objetivo desta etapa foi testar a robustez das credenciais de acesso ao serviço FTP. Utilizamos o **Medusa** para realizar um ataque de força bruta focado no usuário `msfadmin`, tentando encontrar a senha correspondente na wordlist.
+
+### Comando Executado
+```bash
+medusa -h 192.168.56.101 -u msfadmin -P /usr/share/wordlists/rockyou.txt -M ftp
+```
+
+Detalhamento da Sintaxe
+* -h 192.168.56.101: Define o IP do alvo.
+
+* -u msfadmin: Define o usuário específico a ser testado.
+
+* -P .../rockyou.txt: Indica o caminho da wordlist de senhas.
+
+* -M ftp: Seleciona o módulo específico para o protocolo FTP.
+
+Resultados Obtidos
+A ferramenta processou a lista e obteve êxito ao encontrar a credencial correta.
+
+Evidência do Ataque:
+
+Credencial Encontrada:
+---
+## 4. Execução do Ataque: SMB (Porta 445)
+
+Para o serviço SMB (Samba), simulamos um cenário onde o atacante tenta validar credenciais testando uma lista de nomes de usuários comuns (`users.txt`) contra a wordlist de senhas. Isso verifica a segurança de múltiplas contas ao mesmo tempo.
+
+### Preparação da Lista de Usuários
+Criamos um arquivo local chamado `users.txt` contendo possíveis usuários do sistema:
+
+```bash
+echo -e "admin\nroot\nmsfadmin\nuser\nguest" > users.txt
+```
+
+Detalhamento da Sintaxe
+* -h 192.168.56.101: Define o IP do alvo.
+
+* -u msfadmin: Define o usuário específico a ser testado.
+
+* -P .../rockyou.txt: Indica o caminho da wordlist de senhas.
+
+* -M ftp: Seleciona o módulo específico para o protocolo FTP.
