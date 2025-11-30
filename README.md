@@ -1,4 +1,4 @@
-# Desafio Bootcamp Cibersegurança - Simulando um Ataque de Brute Force com Kali Linux e Medusa
+# Desafio Bootcamp Santander Cibersegurança - Simulando um Ataque de Brute Force com Kali Linux e Medusa
 
 Este projeto documenta a simulação de ataques de força bruta (brute-force) visando auditar a segurança de serviços de rede e demonstrar a importância de políticas de senhas robustas.
 
@@ -15,13 +15,6 @@ O laboratório foi montado utilizando virtualização para garantir um ambiente 
 * **Reconhecimento:** Nmap, Netdiscover
 * **Ataque:** Medusa
 
-### Preparação da Wordlist
-Utilizamos a wordlist padrão `rockyou.txt`, nativa do Kali Linux. Caso o arquivo esteja compactado, execute o seguinte comando:
-
-```bash
-# Localiza e descompacta a wordlist
-sudo gzip -d /usr/share/wordlists/rockyou.txt.gz
-```
 
 ## 2. Reconhecimento e Coleta de Informações
 
@@ -49,7 +42,7 @@ O objetivo desta etapa foi testar a robustez das credenciais de acesso ao servi�
 
 ### Comando Executado
 ```bash
-medusa -h 192.168.56.101 -u msfadmin -P /usr/share/wordlists/rockyou.txt -M ftp
+medusa -h 192.168.56.101 -u msfadmin -P pass.txt -M ftp
 ```
 
 ### Detalhamento da Sintaxe
@@ -57,7 +50,7 @@ medusa -h 192.168.56.101 -u msfadmin -P /usr/share/wordlists/rockyou.txt -M ftp
 
 * `-u msfadmin`: Define o usuário específico a ser testado.
 
-* `-P .../rockyou.txt`: Indica o caminho da wordlist de senhas.
+* `-P pass.txt`: Indica o caminho da wordlist de senhas.
 
 * `-M ftp`: Seleciona o módulo específico para o protocolo FTP.
 
@@ -66,33 +59,40 @@ A ferramenta processou a lista e obteve êxito ao encontrar a credencial correta
 
 Evidência do Ataque:
 
-Credencial Encontrada:
+Credencial Encontrada: `User: mfsadmin Password: msfadmin`
 
 
 ## 4. Execução do Ataque: SMB (Porta 445)
 
 Para o serviço SMB (Samba), simulamos um cenário onde o atacante tenta validar credenciais testando uma lista de nomes de usuários comuns (`users.txt`) contra a wordlist de senhas. Isso verifica a segurança de múltiplas contas ao mesmo tempo.
 
-### Preparação da Lista de Usuários
+### Preparação da Lista de Possíveis Usuários
 Criamos um arquivo local chamado `users.txt` contendo possíveis usuários do sistema:
 
 ```bash
 echo -e "admin\nroot\nmsfadmin\nuser\nguest" > users.txt
 ```
 
+### Preparação da Lista de Possíveis senhas
+Criamos um arquivo local chamado `users.txt` contendo possíveis usuários do sistema:
+
+```bash
+echo -e "admin\nroot\nmsfadmin\nuser\nguest" > pass.txt
+```
+
 ### Comando Executado
 Nesta execução, alteramos a flag de usuário único (-u) para lista de usuários (-U) e selecionamos o módulo smbnt.
 
 ```bash
-medusa -h 192.168.56.101 -U users.txt -P /usr/share/wordlists/rockyou.txt -M smbnt
+medusa -h 192.168.56.101 -U users.txt -P pass.txt -M smbnt
 ```
 
 ### Resultados Obtidos
-A ferramenta testou as combinações e logrou êxito ao validar o acesso para o usuário msfadmin, demonstrando que a reutilização de senhas ou senhas fracas em serviços críticos (como compartilhamento de arquivos) compromete o sistema.
+A ferramenta testou as combinações e obteve êxito ao validar o acesso para o usuário msfadmin, demonstrando que a reutilização de senhas ou senhas fracas em serviços críticos (como compartilhamento de arquivos) compromete o sistema.
 
 Evidência do Ataque:
 
-Credencial Confirmada:
+Credencial Confirmada: `User: mfsadmin Password: msfadmin`
 
 ## 5. Relatório de Mitigação e Conclusão
 
