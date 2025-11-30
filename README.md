@@ -33,7 +33,8 @@ Com o IP identificado (192.168.56.101), executamos o Nmap para listar as portas 
 ```bash
 nmap -sV -p 21,139,445 192.168.56.101
 ```
-Evidência do Escaneamento: 
+
+![Resultado do Nmap](./images/nmap.png)
 
 
 ## 3. Execução do Ataque: FTP (Porta 21)
@@ -57,7 +58,7 @@ medusa -h 192.168.56.101 -u msfadmin -P pass.txt -M ftp
 ### Resultados Obtidos
 A ferramenta processou a lista e obteve êxito ao encontrar a credencial correta.
 
-Evidência do Ataque:
+![Sucesso no ataque FTP](./images/ftpattack.png)
 
 Credencial Encontrada: `User: mfsadmin Password: msfadmin`
 
@@ -90,9 +91,10 @@ medusa -h 192.168.56.101 -U users.txt -P pass.txt -M smbnt
 ### Resultados Obtidos
 A ferramenta testou as combinações e obteve êxito ao validar o acesso para o usuário msfadmin, demonstrando que a reutilização de senhas ou senhas fracas em serviços críticos (como compartilhamento de arquivos) compromete o sistema.
 
-Evidência do Ataque:
+![Sucesso no ataque SMB](./images/smbnt.png)
 
 Credencial Confirmada: `User: mfsadmin Password: msfadmin`
+
 
 ## 5. Relatório de Mitigação e Conclusão
 
